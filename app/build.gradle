@@ -1,0 +1,34 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "socketclient.lg.com.socketclient"
+        minSdkVersion 14
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+}
+
+dependencies {
+
+    repositories {
+        jcenter()
+
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    }
+
+    // Robolectric
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-core:1.1'
+    testCompile 'org.hamcrest:hamcrest-library:1.1'
+    testCompile 'org.hamcrest:hamcrest-integration:1.1'
+    testCompile('org.robolectric:robolectric:3.0-rc2') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
+}
