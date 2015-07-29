@@ -1,16 +1,16 @@
 <resources>
     <string name="app_name">Socket Client</string>
 
-    <string name="identification">Identificação</string>
-    <string name="type_your_name">Digite seu nome</string>
-    <string name="address">Endereço</string>
-    <string name="port">Porta</string>
-    <string name="connect">Conectar</string>
-    <string name="send">Enviar</string>
+    <string name="identification">Identification</string>
+    <string name="type_your_name">Type your name</string>
+    <string name="address">Address</string>
+    <string name="port">Port</string>
+    <string name="connect">Connect</string>
+    <string name="send">Send</string>
     <string name="host">localhost</string>
     <string name="port_example">1234</string>
     <string name="title_activity_chat">ChatActivity</string>
-    <string name="connection_error">Erro ao conectar com o servidor!</string>
-    <string name="says">diz</string>
+    <string name="connection_error">Error connecting to the server!</string>
+    <string name="says">says</string>
     <string name="connected_to_server">Connected to server</string>
 </resources>
