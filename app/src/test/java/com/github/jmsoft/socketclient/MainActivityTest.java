@@ -38,9 +38,9 @@ public class MainActivityTest {
     }
 
     @Test
-    public void shouldHaveHappySmiles() throws Exception {
+    public void shouldHaveConnectStringOnButtonConnect() throws Exception {
         Button button = (Button) activity.findViewById(R.id.btnConnect);
-        assertThat(button.getText().toString(), equalTo("Conectar"));
+        assertThat(button.getText().toString(), equalTo("Connect"));
     }
 
     @Test
