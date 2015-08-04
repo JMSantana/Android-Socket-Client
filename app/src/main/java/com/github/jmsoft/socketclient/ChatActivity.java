@@ -126,7 +126,7 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
     /**
      * Async task to connect to server
      */
-    private class ConnectToServerTask extends AsyncTask<Void, String, Void> {
+    public class ConnectToServerTask extends AsyncTask<Void, String, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {

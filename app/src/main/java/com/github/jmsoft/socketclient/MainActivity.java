@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements ActivityGenericsInterface 
     /**
      * Start chat activity with parameters
      */
-    private void launchChatActivity(String identification, String address, Integer port) {
+    public void launchChatActivity(String identification, String address, Integer port) {
         Intent connectIntent = new Intent(this, ChatActivity.class);
         connectIntent.putExtra("identification", identification);
         connectIntent.putExtra("address", address);

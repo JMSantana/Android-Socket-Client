@@ -1,7 +1,10 @@
 package com.github.jmsoft.socketclient;
 
-import android.content.Intent;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.github.jmsoft.socketclient.error.ErrorConstants;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +13,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowToast;
 
 import socketclient.lg.com.socketclient.BuildConfig;
 import socketclient.lg.com.socketclient.R;
@@ -26,10 +31,26 @@ public class MainActivityTest {
     // Activity of the Target application
     MainActivity activity;
 
+    //UI components
+    EditText etIdentification;
+    EditText etAddress;
+    EditText etPort;
+    Button btnConnect;
+    TextView tvIdentification;
+    TextView tvAddress;
+    TextView tvPort;
+
     @Before
     public void setup()  {
         activity = Robolectric.buildActivity(MainActivity.class)
                 .create().get();
+        etIdentification = (EditText) activity.findViewById(R.id.etIdentification);
+        etAddress = (EditText) activity.findViewById(R.id.etAddress);
+        etPort = (EditText) activity.findViewById(R.id.etPort);
+        btnConnect = (Button) activity.findViewById(R.id.btnConnect);
+        tvIdentification = (TextView) activity.findViewById(R.id.tvIdentification);
+        tvAddress = (TextView) activity.findViewById(R.id.tvAdrdess);
+        tvPort = (TextView) activity.findViewById(R.id.tvPort);
     }
 
     @Test
@@ -38,17 +59,55 @@ public class MainActivityTest {
     }
 
     @Test
-    public void shouldHaveConnectStringOnButtonConnect() throws Exception {
-        Button button = (Button) activity.findViewById(R.id.btnConnect);
-        assertThat(button.getText().toString(), equalTo("Connect"));
+    public void shouldHaveLocalizedStringsOnUIComponents() throws Exception {
+        assertThat(btnConnect.getText().toString(), equalTo("Connect"));
+        assertThat(tvIdentification.getText().toString(), equalTo("Identification"));
+        assertThat(tvAddress.getText().toString(), equalTo("Address"));
+        assertThat(tvPort.getText().toString(), equalTo("Port"));
     }
 
     @Test
-    public void buttonConnectClickShouldStartChatActivity() throws Exception
+    public void shouldStartChatActivity() throws Exception
     {
-        Button button = (Button) activity.findViewById(R.id.btnConnect);
-        button.performClick();
-        Intent intent = Shadows.shadowOf(activity).peekNextStartedActivity();
-        assertEquals(ChatActivity.class.getCanonicalName(), intent.getComponent().getClassName());
+        //given
+        etIdentification.setText("testId");
+        etAddress.setText("localhost");
+        etPort.setText("1234");
+
+        //when
+        btnConnect.performClick();
+
+        //then
+        ShadowActivity.IntentForResult intent = Shadows.shadowOf(activity).peekNextStartedActivityForResult();
+
+        //and
+        assertEquals(intent.requestCode, 0);
+        assertEquals(ChatActivity.class.getCanonicalName(), intent.intent.getComponent().getClassName());
+        assertEquals(intent.intent.getStringExtra("identification"), "testId");
+        assertEquals(intent.intent.getStringExtra("address"), "localhost");
+        assertEquals(intent.intent.getIntExtra("port", 0), 1234);
+    }
+
+    @Test
+    public void shouldTriggerToastWhenChatActivityReturnsError() throws Exception {
+        //given
+        etIdentification.setText("testId");
+        etAddress.setText("localhost");
+        etPort.setText("1234");
+
+        //when
+        btnConnect.performClick();
+
+        //then
+        ShadowActivity.IntentForResult intent = Shadows.shadowOf(activity).peekNextStartedActivityForResult();
+
+        //and
+        Shadows.shadowOf(activity).receiveResult(
+                intent.intent,
+                ErrorConstants.getConnectionError(),
+                null);
+
+        //then
+        assertThat(ShadowToast.getTextOfLatestToast(), equalTo("Error connecting to the server!"));
     }
 }
