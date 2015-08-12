@@ -11,11 +11,8 @@ import android.widget.TextView;
 import com.github.jmsoft.socketclient.error.ErrorConstants;
 import com.github.jmsoft.socketclient.interfaces.ActivityGenericsInterface;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 
 import socketclient.lg.com.socketclient.R;
@@ -33,10 +30,11 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
     private String mAddress;
     private int mPort;
 
-    //Socket for connecting the client to server
-    private static Socket sSocket;
-
     private InetAddress ia;
+
+    //Async tasks
+    private ConnectionTask connectionTask;
+    private SendMessageTask messageTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,21 +48,27 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
         getIntentValues();
 
         //Try to connect to server. Set executor to run parallel execution with Send Message task
-        new ConnectToServerTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        try {
+            ia = getInetAddress();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        connectionTask = new ConnectionTask(ia, mPort, this, tvText);
+        connectionTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         //set button listener
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!etMessage.getText().toString().equals("")) {
+            if (!etMessage.getText().toString().equals("")) {
 
-                    tvText.setText(tvText.getText().toString() + '\n' + mIdentification + ": "
-                            + etMessage.getText().toString());
+                tvText.setText(tvText.getText().toString() + '\n' + mIdentification + ": "
+                        + etMessage.getText().toString());
 
-                    //Start Send Task
-                    new SendMessageTask().execute(etMessage.getText().toString());
-
-                }
+                //Start Send Task
+                messageTask = new SendMessageTask(connectionTask.getsSocket(), etMessage, mIdentification, getApplicationContext());
+                messageTask.execute(etMessage.getText().toString());
+            }
             }
         });
     }
@@ -87,85 +91,13 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
         mPort = getIntent().getIntExtra("port", 1234);
     }
 
-    /**
-     * Async task to send messages to server
-     */
-    private class SendMessageTask extends AsyncTask<String, String, Void> {
-
-        @Override
-        protected Void doInBackground(String... arg) {
-            try {
-                final DataOutputStream dos = new DataOutputStream(
-                        sSocket.getOutputStream());
-
-                //Try to write on socket output stream
-                try {
-                    dos.writeUTF(mIdentification + " " + getResources().getString(R.string.says) + " " + arg[0]);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    finishWithError();
-                }
-
-            } catch (Exception e1) {
-                e1.printStackTrace();
-                finishWithError();
-            }
-
-            //Update UI
-            publishProgress(arg[0]);
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            etMessage.setText("");
-        }
-    }
-
-    /**
-     * Async task to connect to server
-     */
-    public class ConnectToServerTask extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                sSocket = new Socket(getInetAddress(), mPort);
-
-                //Add connected to server message to UI
-                publishProgress(getResources().getString(R.string.connected_to_server));
-
-                //Listen to messages
-                while (true) {
-                    DataInputStream dis = new DataInputStream(
-                            sSocket.getInputStream());
-                    final String string = dis.readUTF();
-
-                    publishProgress(string);
-                }
-            } catch (Exception e1) {
-                e1.printStackTrace();
-                finishWithError();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            tvText.setText(tvText.getText().toString() + '\n'
-                    + values[0]);
-        }
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //Close socket if it is still open
-        if (sSocket != null) {
+        if (connectionTask.getsSocket() != null) {
             try {
-                sSocket.close();
+                connectionTask.getsSocket().close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -175,16 +107,16 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
     /**
      * Return InatAddress object from host address
      */
-    private InetAddress getInetAddress() throws InterruptedException {
+    public InetAddress getInetAddress() throws InterruptedException {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    ia = InetAddress.getByName(mAddress);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                    ia = null;
-                }
+            try {
+                ia = InetAddress.getByName(mAddress);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                ia = null;
+            }
             }
         });
         t.start();
@@ -198,5 +130,33 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
     public void finishWithError() {
         setResult(ErrorConstants.getConnectionError());
         finish();
+    }
+
+    public void setmIdentification(String mIdentification) {
+        this.mIdentification = mIdentification;
+    }
+
+    public void setmAddress(String mAddress) {
+        this.mAddress = mAddress;
+    }
+
+    public void setmPort(int mPort) {
+        this.mPort = mPort;
+    }
+
+    public ConnectionTask getConnectionTask() {
+        return connectionTask;
+    }
+
+    public InetAddress getIa() {
+        return ia;
+    }
+
+    public SendMessageTask getMessageTask() {
+        return messageTask;
+    }
+
+    public void setIa(InetAddress ia) {
+        this.ia = ia;
     }
 }

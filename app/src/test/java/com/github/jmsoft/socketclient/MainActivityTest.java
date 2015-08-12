@@ -9,6 +9,7 @@ import com.github.jmsoft.socketclient.error.ErrorConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.Shadows;
@@ -42,8 +43,9 @@ public class MainActivityTest {
 
     @Before
     public void setup()  {
-        activity = Robolectric.buildActivity(MainActivity.class)
-                .create().get();
+//        activity = Robolectric.buildActivity(MainActivity.class)
+//                .create().get();
+        activity = Robolectric.setupActivity(MainActivity.class);
         etIdentification = (EditText) activity.findViewById(R.id.etIdentification);
         etAddress = (EditText) activity.findViewById(R.id.etAddress);
         etPort = (EditText) activity.findViewById(R.id.etPort);
@@ -59,7 +61,20 @@ public class MainActivityTest {
     }
 
     @Test
+    public void shouldCallInitializeUIComponentsWhenActivityIsCreated(){
+        //given
+        MainActivity spy = Mockito.spy(activity);
+
+        //when
+        spy.onCreate(null);
+
+        //then
+        Mockito.verify(spy, Mockito.times(1)).initializeUIComponents();
+    }
+
+    @Test
     public void shouldHaveLocalizedStringsOnUIComponents() throws Exception {
+        //expect
         assertThat(btnConnect.getText().toString(), equalTo("Connect"));
         assertThat(tvIdentification.getText().toString(), equalTo("Identification"));
         assertThat(tvAddress.getText().toString(), equalTo("Address"));
