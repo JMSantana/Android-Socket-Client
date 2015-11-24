@@ -15,12 +15,26 @@ import socketclient.lg.com.socketclient.R;
  */
 public class SendMessageTask extends AsyncTask<String, String, Void> {
 
-    public SendMessageTask(){
+    private Socket sSocket;
+    private Context context;
+    private EditText etMessage;
+    private String mIdentification;
+
+    public SendMessageTask(Socket sSocket, EditText etMessage, String mIdentification, Context context){
+        this.sSocket = sSocket;
+        this.etMessage = etMessage;
+        this.mIdentification = mIdentification;
+        this.context = context;
     }
 
     @Override
     protected Void doInBackground(String... arg) {
         return null;
+    }
+
+    @Override
+    protected void onProgressUpdate(String... values) {
+        super.onProgressUpdate(values);
     }
 
 }

@@ -22,10 +22,30 @@ import socketclient.lg.com.socketclient.R;
  */
 public class ChatActivity extends Activity implements ActivityGenericsInterface {
 
+    private EditText etMessage;
+    private TextView tvText;
+    private Button btnSend;
+
+    private String mIdentification;
+    private String mAddress;
+    private int mPort;
+
+    private InetAddress ia;
+
+    //Async tasks
+    private ConnectionTask connectionTask;
+    private SendMessageTask messageTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        //Get the reference to the UI components
+        initializeUIComponents();
+
+        //Get values coming from MainActivity
+        getIntentValues();
 
     }
 
@@ -33,12 +53,18 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
      * Get UI components references
      */
     public void initializeUIComponents() {
+        etMessage = (EditText) findViewById(R.id.etMessage);
+        tvText = (TextView) findViewById(R.id.tvText);
+        btnSend = (Button) findViewById(R.id.btnSend);
     }
 
     /**
      * Retrieve values passed through intent
      */
     public void getIntentValues() {
+        mIdentification = getIntent().getStringExtra("identification");
+        mAddress = getIntent().getStringExtra("address");
+        mPort = getIntent().getIntExtra("port", 1234);
     }
 
     @Override

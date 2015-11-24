@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -15,7 +16,18 @@ import socketclient.lg.com.socketclient.R;
  */
 public class ConnectionTask extends AsyncTask<Void, String, Void> {
 
-    public ConnectionTask(){
+    //Socket for connecting the client to server
+    private Socket sSocket;
+    private InetAddress ia;
+    private int mPort;
+    private Context context;
+    private TextView tvText;
+
+    public ConnectionTask(InetAddress ia, int mPort, Context context, TextView tvText){
+        this.ia = ia;
+        this.mPort = mPort;
+        this.context = context;
+        this.tvText = tvText;
     }
 
     @Override
