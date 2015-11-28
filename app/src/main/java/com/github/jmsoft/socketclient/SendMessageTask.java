@@ -29,12 +29,21 @@ public class SendMessageTask extends AsyncTask<String, String, Void> {
 
     @Override
     protected Void doInBackground(String... arg) {
+        try {
+            final DataOutputStream dos = new DataOutputStream(sSocket.getOutputStream());
+            dos.writeUTF(mIdentification + ' ' + context.getString(R.string.says) + ' ' + arg[0]);
+            publishProgress(arg[0]);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
         return null;
     }
 
     @Override
     protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
+        etMessage.setText("");
     }
 
 }

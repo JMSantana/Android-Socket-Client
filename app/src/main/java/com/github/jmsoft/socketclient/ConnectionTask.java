@@ -32,10 +32,31 @@ public class ConnectionTask extends AsyncTask<Void, String, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        return null;
+        try {
+            sSocket = new Socket(ia, mPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        publishProgress(context.getString(R.string.connected_to_server));
+
+        while (true) {
+            try {
+                DataInputStream dis = new DataInputStream(sSocket.getInputStream());
+                final String string = dis.readUTF();
+                publishProgress(string);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
     }
 
     @Override
     protected void onProgressUpdate(String... values) {
+        tvText.setText(tvText.getText().toString() + '\n' + values[0]);
+    }
+
+    public Socket getsSocket() {
+        return sSocket;
     }
 }

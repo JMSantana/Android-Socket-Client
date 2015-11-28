@@ -30,11 +30,31 @@ public class MainActivity extends Activity implements ActivityGenericsInterface 
         setContentView(R.layout.activity_main);
 
         initializeUIComponents();
+
+        btnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String identification = etIdentification.getText().toString();
+                String address = etAddress.getText().toString();
+                Integer port = Integer.parseInt(etPort.getText().toString());
+                launchChatActivity(identification,address,port);
+            }
+        });
+
+    }
+
+    private void launchChatActivity(String identification, String address, Integer port) {
+        Intent connectIntent = new Intent(this, ChatActivity.class);
+        connectIntent.putExtra("identification", identification);
+        connectIntent.putExtra("address", address);
+        connectIntent.putExtra("port", port);
+        startActivityForResult(connectIntent, REQUEST_CODE);
     }
 
     /**
      * Get UI components references
      */
+    @Override
     public void initializeUIComponents() {
         etIdentification = (EditText) findViewById(R.id.etIdentification);
         etAddress = (EditText) findViewById(R.id.etAddress);
@@ -44,4 +64,14 @@ public class MainActivity extends Activity implements ActivityGenericsInterface 
 
     @Override
     public void getIntentValues() {}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (REQUEST_CODE == requestCode) {
+            if (ErrorConstants.getConnectionError() == resultCode) {
+                Toast.makeText(this, getString(R.string.connection_error), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

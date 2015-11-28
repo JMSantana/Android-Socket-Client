@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.github.jmsoft.socketclient.error.ErrorConstants;
 import com.github.jmsoft.socketclient.interfaces.ActivityGenericsInterface;
 
 import java.io.IOException;
@@ -47,6 +46,44 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
         //Get values coming from MainActivity
         getIntentValues();
 
+        try {
+            ia = getInetAddress();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        connectionTask = new ConnectionTask(ia, mPort, this, tvText);
+        connectionTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!etMessage.getText().toString().equals("")) {
+                    tvText.setText(tvText.getText().toString() + '\n' + mIdentification + ':' +
+                        etMessage.getText().toString());
+                    messageTask = new SendMessageTask(connectionTask.getsSocket(), etMessage,
+                            mIdentification, ChatActivity.this);
+                    messageTask.execute(etMessage.getText().toString());
+                }
+            }
+        });
+    }
+
+    private InetAddress getInetAddress() throws InterruptedException {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ia = InetAddress.getByName(mAddress);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                    ia = null;
+                }
+            }
+        });
+        t.start();
+        t.join();
+        return ia;
     }
 
     /**
@@ -70,5 +107,12 @@ public class ChatActivity extends Activity implements ActivityGenericsInterface 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (connectionTask.getsSocket() != null) {
+            try {
+                connectionTask.getsSocket().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
