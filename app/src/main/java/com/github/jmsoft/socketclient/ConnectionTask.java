@@ -2,7 +2,7 @@ package com.github.jmsoft.socketclient;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.TextView;
+import android.support.v7.widget.RecyclerView;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -21,13 +21,13 @@ public class ConnectionTask extends AsyncTask<Void, String, Void> {
     private InetAddress ia;
     private int mPort;
     private Context context;
-    private TextView tvText;
+    private RecyclerView recyclerView;
 
-    public ConnectionTask(InetAddress ia, int mPort, Context context, TextView tvText){
+    public ConnectionTask(InetAddress ia, int mPort, Context context, RecyclerView recyclerView){
         this.ia = ia;
         this.mPort = mPort;
         this.context = context;
-        this.tvText = tvText;
+        this.recyclerView = recyclerView;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ConnectionTask extends AsyncTask<Void, String, Void> {
 
     @Override
     protected void onProgressUpdate(String... values) {
-        tvText.setText(tvText.getText().toString() + '\n' + values[0]);
+        ((MyAdapter)(recyclerView.getAdapter())).add(values[0]);
     }
 
     public Socket getsSocket() {

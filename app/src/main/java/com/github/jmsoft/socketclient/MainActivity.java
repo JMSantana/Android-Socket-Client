@@ -1,8 +1,10 @@
 package com.github.jmsoft.socketclient;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +18,7 @@ import socketclient.lg.com.socketclient.R;
 /**
  * Main Activity
  */
-public class MainActivity extends Activity implements ActivityGenericsInterface {
+public class MainActivity extends AppCompatActivity implements ActivityGenericsInterface {
 
     private static final int REQUEST_CODE = 0;
     private EditText etIdentification;
@@ -60,6 +62,15 @@ public class MainActivity extends Activity implements ActivityGenericsInterface 
         etAddress = (EditText) findViewById(R.id.etAddress);
         etPort = (EditText) findViewById(R.id.etPort);
         btnConnect = (Button) findViewById(R.id.btnConnect);
+        try {
+            ActionBar ab = getSupportActionBar();
+            if (ab != null) {
+                ab.setDisplayHomeAsUpEnabled(false);
+                ab.setHomeButtonEnabled(false);
+            }
+        } catch(Exception e) {
+            Log.e("chat", e.getMessage());
+        }
     }
 
     @Override
@@ -68,10 +79,8 @@ public class MainActivity extends Activity implements ActivityGenericsInterface 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (REQUEST_CODE == requestCode) {
-            if (ErrorConstants.getConnectionError() == resultCode) {
-                Toast.makeText(this, getString(R.string.connection_error), Toast.LENGTH_LONG).show();
-            }
+        if (REQUEST_CODE == requestCode && ErrorConstants.getConnectionError() == resultCode) {
+            Toast.makeText(this, getString(R.string.connection_error), Toast.LENGTH_LONG).show();
         }
     }
 }

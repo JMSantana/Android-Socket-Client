@@ -44,7 +44,6 @@
         android:layout_height="wrap_content"
         android:text="@string/port"
         android:id="@+id/tvPort"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/etAddress"/>
 
@@ -63,7 +62,7 @@
         android:layout_below="@+id/etPort"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:background="@android:drawable/dialog_holo_light_frame"
+        android:elevation="5dp"
         android:text="@string/connect"
         android:id="@+id/btnConnect"/>
 
