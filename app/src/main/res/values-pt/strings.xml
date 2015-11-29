@@ -12,5 +12,5 @@
     <string name="title_activity_chat">ChatActivity</string>
     <string name="connection_error">Erro ao conectar com o servidor!</string>
     <string name="says">diz</string>
-    <string name="connected_to_server">Connected to server</string>
+    <string name="connected_to_server">Conectado ao servidor</string>
 </resources>

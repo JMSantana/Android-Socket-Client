@@ -23,12 +23,11 @@
 
     <Button
         android:id="@+id/btnSend"
-        android:background="@android:drawable/dialog_holo_light_frame"
+        android:elevation="5dp"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/etMessage"
         android:layout_toEndOf="@+id/etMessage"
-        android:layout_toRightOf="@+id/etMessage"
         android:layout_alignParentBottom="true"
         android:text="@string/send" />
 
