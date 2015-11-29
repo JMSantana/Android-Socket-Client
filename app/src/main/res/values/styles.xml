@@ -1,8 +1,11 @@
 <resources>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <!-- your app branding color for the app bar -->
         <item name="colorPrimary">#0B3B0B</item>
+        <!-- darker variant for the status bar and contextual app bars -->
         <item name="colorPrimaryDark">#0B610B</item>
     </style>
+
 </resources>

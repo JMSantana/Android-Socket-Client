@@ -20,7 +20,8 @@
         </activity>
         <activity
             android:name="com.github.jmsoft.socketclient.ChatActivity"
-            android:label="@string/title_activity_chat" >
+            android:label="@string/title_activity_chat"
+            android:parentActivityName="com.github.jmsoft.socketclient.MainActivity">
         </activity>
     </application>
 

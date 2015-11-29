@@ -2,28 +2,31 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "socketclient.lg.com.socketclient"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.2"
+        versionCode 1
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 }
 
 dependencies {
+
     repositories {
         jcenter()
 
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
+
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:support-v4:23.0.1'
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.android.support:cardview-v7:23.0.1'
+
     // Robolectric
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.0'

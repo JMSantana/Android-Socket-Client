@@ -2,12 +2,13 @@ package com.github.jmsoft.socketclient;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
+
+import com.github.jmsoft.socketclient.adapter.ChatAdapter;
 
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.List;
 
 import socketclient.lg.com.socketclient.R;
 
@@ -21,39 +22,44 @@ public class ConnectionTask extends AsyncTask<Void, String, Void> {
     private InetAddress ia;
     private int mPort;
     private Context context;
-    private RecyclerView recyclerView;
+    private List<String> messages;
+    private ChatAdapter mChatAdapter;
 
-    public ConnectionTask(InetAddress ia, int mPort, Context context, RecyclerView recyclerView){
+    public ConnectionTask(InetAddress ia, int mPort, Context context, List<String> messages, ChatAdapter mChatAdapter){
         this.ia = ia;
         this.mPort = mPort;
         this.context = context;
-        this.recyclerView = recyclerView;
+        this.messages = messages;
+        this.mChatAdapter = mChatAdapter;
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
         try {
             sSocket = new Socket(ia, mPort);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        publishProgress(context.getString(R.string.connected_to_server));
 
-        while (true) {
-            try {
-                DataInputStream dis = new DataInputStream(sSocket.getInputStream());
+            //Add connected to server message to UI
+            publishProgress(context.getResources().getString(R.string.connected_to_server));
+
+            //Listen to messages
+            while (true) {
+                DataInputStream dis = new DataInputStream(
+                        sSocket.getInputStream());
                 final String string = dis.readUTF();
+
                 publishProgress(string);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
             }
+        } catch (Exception e1) {
+            e1.printStackTrace();
         }
+        return null;
     }
 
     @Override
     protected void onProgressUpdate(String... values) {
-        ((MyAdapter)(recyclerView.getAdapter())).add(values[0]);
+        super.onProgressUpdate(values);
+        messages.add(values[0]);
+        mChatAdapter.notifyDataSetChanged();
     }
 
     public Socket getsSocket() {

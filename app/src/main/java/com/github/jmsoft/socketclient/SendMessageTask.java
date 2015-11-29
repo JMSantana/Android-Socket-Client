@@ -30,13 +30,22 @@ public class SendMessageTask extends AsyncTask<String, String, Void> {
     @Override
     protected Void doInBackground(String... arg) {
         try {
-            final DataOutputStream dos = new DataOutputStream(sSocket.getOutputStream());
-            dos.writeUTF(mIdentification + ' ' + context.getString(R.string.says) + ' ' + arg[0]);
-            publishProgress(arg[0]);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            final DataOutputStream dos = new DataOutputStream(
+                    sSocket.getOutputStream());
+
+            //Try to write on socket output stream
+            try {
+                dos.writeUTF(mIdentification + " " + context.getResources().getString(R.string.says) + " " + arg[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e1) {
+            e1.printStackTrace();
         }
+
+        //Update UI
+        publishProgress(arg[0]);
         return null;
     }
 
@@ -46,4 +55,7 @@ public class SendMessageTask extends AsyncTask<String, String, Void> {
         etMessage.setText("");
     }
 
+    public void setsSocket(Socket socket){
+        this.sSocket = socket;
+    }
 }
